@@ -1,0 +1,43 @@
+version: "3.1"
+services:
+    vparticipation:
+        container_name: v_participation_app
+        build: .
+        ports: 
+            - "9291:80"
+        volumes:
+            - ./src:/var/www/html/
+        env_file: 'src/.env.prod'
+        links:
+            - docker-db
+        networks:
+            - default
+    docker-db:
+        container_name: v_participation_db
+        image: mysql:8.0
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_DATABASE: votes
+            MYSQL_USER: votes_user
+            MYSQL_PASSWORD: 123456
+            MYSQL_ROOT_PASSWORD: 123456
+        volumes:
+            - ./dump:/docker-entrypoint-initdb.d
+            - persistent:/var/lib/mysql
+        networks:
+            - default
+    docker-phpmyadmin:
+        container_name: v_participation_phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - docker-db
+        ports:
+            - 9292:80
+        environment:
+            PMA_HOST: v_participation_db
+            MYSQL_USER: votes
+            MYSQL_PASSWORD: 123456
+            MYSQL_ROOT_PASSWORD: 123456
+    
+volumes:
+    persistent:
