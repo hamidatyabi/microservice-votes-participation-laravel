@@ -5,9 +5,9 @@ services:
         build: .
         ports: 
             - "9291:80"
+        env_file: 'src/.env.prod'
         volumes:
             - ./src:/var/www/html/
-        env_file: 'src/.env.prod'
         links:
             - docker-db
         networks:
