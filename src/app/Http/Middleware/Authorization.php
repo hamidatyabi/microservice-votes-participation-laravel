@@ -34,7 +34,7 @@ class Authorization
             "error" => $this->tokenInfo->getMessage()
             ), $this->tokenInfo->getCode());
         }
-        
+        $request->request->add(['user_id' => $this->tokenInfo->getResult()->getUserId()]);
         
         return $next($request);
     }

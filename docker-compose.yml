@@ -10,6 +10,14 @@ services:
             - ./src:/var/www/html/
         links:
             - docker-db
+            - docker-redis
+        networks:
+            - default
+    docker-redis:
+        image: redis
+        container_name: v_participation_cache
+        expose:
+            - 6379
         networks:
             - default
     docker-db:

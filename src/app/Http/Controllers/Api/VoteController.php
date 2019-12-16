@@ -5,7 +5,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
 use App\Model\VoteService;
+use App\Model\VoteToUser;
 
 class VoteController extends Controller
 {
@@ -39,6 +41,7 @@ class VoteController extends Controller
                 }
             }
             if(!$find) $validator->errors()->add('optionId', "OptionId is incorrect");
+            $this->voteInfo = $result;
         });
         if ($validator->fails()) 
             return response()->json(array(
@@ -47,8 +50,25 @@ class VoteController extends Controller
                 ), 406);
         
         ///////////////////////////////////////////////////////////
-        
+        $userVote = VoteToUser::getVoteIdAndUserId($request->get('user_id'), $this->voteInfo['id']);
+        if($userVote != null){
+            return response()->json(array(
+                "error_code" => 406,
+                "error" => "You voted this option"
+                ), 406);
+        }
+        $vote = new VoteToUser;
+        $vote->user_id = (int)$request->get('user_id');
+        $vote->vote_id = (int)$this->voteInfo['id'];
+        $vote->option_id = (int)$this->params['optionId'];
+        $vote->assign_time = date("Y-m-d H:i:s");
+        if(!VoteToUser::saveVote($vote)){
+            return response()->json(array(
+                "error_code" => 406,
+                "error" => "Your voting has exception.maybe you voted before"
+                ), 406);
+        }
         ///////////////////////////////////////////////////////////
-        return "OK";
+        return $vote;
     }
 }
