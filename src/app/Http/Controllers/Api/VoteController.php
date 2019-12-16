@@ -71,4 +71,11 @@ class VoteController extends Controller
         ///////////////////////////////////////////////////////////
         return $vote;
     }
+    
+    public function check(Request $request)
+    {
+        $userVote = VoteToUser::getVoteIdAndUserId($request->get('user_id'), $this->params['voteId']);
+        return response()->json(array("voted" => ($userVote != null)), 200);
+    }
+    
 }

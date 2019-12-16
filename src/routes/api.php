@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api'], function () {
     Route::group(['middleware' => ['auth']], function () {
         Route::group(['prefix' => 'vote'], function () {
             Route::post('push', 'VoteController@push');
+            Route::post('check', 'VoteController@check');
         });
     });
     Route::group(['middleware' => ['auth:api', 'active']], function () {
